@@ -55,8 +55,7 @@ namespace TestGeneratorLib
                 var res = readWriter.ReadFileAsync(filePath);
                 Console.WriteLine("read: збс"); 
                 return res;
-            }         
-                    , readBlockOptions);
+            }, readBlockOptions);
 
 
             var processBlock = new TransformManyBlock<Task<string>, (string, string)>(async (sourceCode) =>
@@ -99,7 +98,7 @@ namespace TestGeneratorLib
             }
 
             readBlock.Complete();
-            await readBlock.Completion;
+            await writeBlock.Completion;
         }
     }
 }

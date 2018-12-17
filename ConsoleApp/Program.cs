@@ -57,7 +57,7 @@ namespace ConsoleApp
                 
             }
 
-            Console.ReadKey();
+            //Console.ReadKey();
         }
     }
 }
