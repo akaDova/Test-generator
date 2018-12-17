@@ -54,17 +54,17 @@ namespace TestGeneratorLib
             {
                 var res = readWriter.ReadFileAsync(filePath);
                 Console.WriteLine("read: збс"); 
-return res;
+                return res;
             }         
                     , readBlockOptions);
 
 
-            var processBlock = new TransformManyBlock<Task<string>, (string, string)>((sourceCode) =>
+            var processBlock = new TransformManyBlock<Task<string>, (string, string)>(async (sourceCode) =>
             {
                 // TODO process
                 Console.WriteLine("process: start!");
-                sourceCode.Wait();
-                string resText = sourceCode.Result ;
+                //awaisourceCode.Wait();
+                string resText = await sourceCode ;
                 Console.WriteLine(resText);
                 IEnumerable<(string, string)> res = null;
                 try
@@ -83,6 +83,7 @@ return res;
 
             var writeBlock = new ActionBlock<(string, string)>(async (testTuple) =>
             {
+                Console.WriteLine("write  start");
                 string testCodeText, testFileName;
                 (testFileName, testCodeText) = testTuple;
                 await readWriter.WriteFileAsync(testCodeText, $@"{targetDir}/{testFileName}");

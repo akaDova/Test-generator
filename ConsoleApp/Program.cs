@@ -47,8 +47,8 @@ namespace ConsoleApp
             {
                 var task = testGenerator.Generate();
                 task.Wait();
-                Thread.Sleep(2000);
-                Console.WriteLine("збс");
+                
+              
                 
             }
             catch (AggregateException ex)
@@ -56,8 +56,8 @@ namespace ConsoleApp
                 Console.WriteLine("Уважаемый, ошибка");
                 
             }
-            
 
+            Console.ReadKey();
         }
     }
 }
