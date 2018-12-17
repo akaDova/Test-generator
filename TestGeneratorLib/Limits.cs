@@ -11,19 +11,22 @@ namespace TestGeneratorLib
         public int ReadCount
         {
             get;
+            set;
         }
         public int WriteCount
         {
             get;
+            set;
         }
         public int ProcessCount
         {
             get;
+            set;
         }
 
         public Limits() { }
 
-        public Limits(int readCount, int processCount, int writeCount)
+        public Limits(int readCount = 1, int processCount = 1, int writeCount = 1)
         {
             ReadCount = readCount;
             ProcessCount = processCount;

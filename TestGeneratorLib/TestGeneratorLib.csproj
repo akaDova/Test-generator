@@ -187,6 +187,7 @@
     <Compile Include="ReadWriter.cs" />
     <Compile Include="TestGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestModule.cs" />
     <Compile Include="TestTemplate.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -13,6 +13,7 @@ namespace TestGeneratorLib
         string targetDir;
         Limits limits;
         ReadWriter readWriter = new ReadWriter();
+        CSParser parser = new CSParser();
 
         public TestGenerator(IEnumerable<string> sourceFiles, string targetDir, Limits limits)
         {
@@ -47,15 +48,18 @@ namespace TestGeneratorLib
                     readWriter.ReadFileAsync(filePath), readBlockOptions);
 
 
-            var processBlock = new TransformManyBlock<Task<string>, Task<TestTemplate>>((sourceCode) =>
+            var processBlock = new TransformManyBlock<Task<string>, (string, string)>((sourceCode) =>
             {
                 // TODO process
-                return new IEnumerable<Task<TestTemplate>>();// (() => new TestTemplate());
+                
+                return parser.GetTestCode(sourceCode.Result);// (() => new TestTemplate());
             }, processBlockOptions);
 
-            var writeBlock = new ActionBlock<Task<TestTemplate>>((testTemplate) =>
+            var writeBlock = new ActionBlock<(string, string)>(async (testTuple) =>
             {
-                // TODO write
+                string testCodeText, testFileName;
+                (testFileName, testCodeText) = testTuple;
+                await readWriter.WriteFileAsync(testCodeText, $@"{targetDir}/{testFileName}");
             }, writeBlockOptions);
 
             readBlock.LinkTo(processBlock, linkOptions);
