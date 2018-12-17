@@ -15,32 +15,40 @@ namespace TestGeneratorLib
     {
         public IEnumerable<(string, string)> GetTestCode(string sourceCode)
         {
-            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(sourceCode);
-            CompilationUnitSyntax root = syntaxTree.GetCompilationUnitRoot();
+            try
+            {
+                Console.WriteLine("GetTestCode");
+                SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(sourceCode, encoding: Encoding.UTF8);
+                CompilationUnitSyntax root = syntaxTree.GetCompilationUnitRoot();
+                Console.WriteLine("GetTestCode");
+                //IEnumerable<UsingDirectiveSyntax> usingNamespaces = root.DescendantNodes()
+                //    .OfType<UsingDirectiveSyntax>();
 
-            IEnumerable<UsingDirectiveSyntax> usingNamespaces = root.DescendantNodes()
-                .OfType<UsingDirectiveSyntax>();
-
-            IEnumerable<ClassDeclarationSyntax> classes = root.DescendantNodes()
-                .OfType<ClassDeclarationSyntax>();
+                IEnumerable<ClassDeclarationSyntax> classes = root.DescendantNodes()
+                    .OfType<ClassDeclarationSyntax>();
 
 
 
-            return from classDecl in classes
-                   select GenerateTest(classDecl);
+                return from classDecl in classes
+                       select GenerateTest(classDecl);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Уважаемый, ошибка");
+                return null;
+            }
 
 
 
         }
-
-        (string, string) GenerateTest(ClassDeclarationSyntax classDeclaration)
+        //удалить
+        internal (string, string) GenerateTest(ClassDeclarationSyntax classDeclaration)
         {
             string testFileName = classDeclaration.Identifier.Text + "Test.cs";
-                
-            
 
-            string namespaceName = classDeclaration.Parent.DescendantNodes()
-                .OfType<NamespaceDeclarationSyntax>().Single().Name.ToString();
+
+
+            string namespaceName = ((NamespaceDeclarationSyntax)classDeclaration.Parent).Name.ToString();
             string className = classDeclaration.Identifier.Text;
 
             NamespaceDeclarationSyntax @namespace = GenerateNamespace();

@@ -22,6 +22,12 @@ namespace TestGeneratorLib
             this.limits = limits;
         }
 
+        public (string, string) __Generate(string src)
+        {
+            var res = parser.GetTestCode(src).Single();
+            return res;
+        }
+
         public async Task Generate()
         {
             var linkOptions = new DataflowLinkOptions
@@ -44,15 +50,35 @@ namespace TestGeneratorLib
                 MaxDegreeOfParallelism = limits.WriteCount
             };
 
-            var readBlock = new TransformBlock<string, Task<string>>(filePath =>           
-                    readWriter.ReadFileAsync(filePath), readBlockOptions);
+            var readBlock = new TransformBlock<string, Task<string>>(filePath => 
+            {
+                var res = readWriter.ReadFileAsync(filePath);
+                Console.WriteLine("read: збс"); 
+return res;
+            }         
+                    , readBlockOptions);
 
 
             var processBlock = new TransformManyBlock<Task<string>, (string, string)>((sourceCode) =>
             {
                 // TODO process
-                
-                return parser.GetTestCode(sourceCode.Result);// (() => new TestTemplate());
+                Console.WriteLine("process: start!");
+                sourceCode.Wait();
+                string resText = sourceCode.Result ;
+                Console.WriteLine(resText);
+                IEnumerable<(string, string)> res = null;
+                try
+                {
+                     res = parser.GetTestCode(resText);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("process: Ошибка!");
+                }
+                Console.WriteLine("process: збс!");
+                return res;
+
+
             }, processBlockOptions);
 
             var writeBlock = new ActionBlock<(string, string)>(async (testTuple) =>
@@ -60,6 +86,7 @@ namespace TestGeneratorLib
                 string testCodeText, testFileName;
                 (testFileName, testCodeText) = testTuple;
                 await readWriter.WriteFileAsync(testCodeText, $@"{targetDir}/{testFileName}");
+                Console.WriteLine("збс!");
             }, writeBlockOptions);
 
             readBlock.LinkTo(processBlock, linkOptions);

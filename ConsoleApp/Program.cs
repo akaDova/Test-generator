@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TestGeneratorLib;
 
@@ -25,14 +27,29 @@ namespace ConsoleApp
                 ProcessCount = int.Parse(args[args.Length - 1 - 1]),
                 WriteCount = int.Parse(args[args.Length - 1])
             };
-
+            string fileContent = "";
+            if (File.Exists(args[0]))
+            {
+                using (StreamReader fileStream = File.OpenText(args[0]))
+                {
+                    fileContent = fileStream.ReadToEnd();
+                }
+            }
+                
+            
 
 
             var testGenerator = new TestGenerator(args.Take(args.Length - 4), args[args.Length - 3 - 1], limits);
 
+            //var res = testGenerator.__Generate(fileContent);
+
             try
             {
-                testGenerator.Generate().Wait();
+                var task = testGenerator.Generate();
+                task.Wait();
+                Thread.Sleep(2000);
+                Console.WriteLine("збс");
+                
             }
             catch (AggregateException ex)
             {

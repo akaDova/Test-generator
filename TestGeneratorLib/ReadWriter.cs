@@ -12,7 +12,7 @@ namespace TestGeneratorLib
         public async Task<string> ReadFileAsync(string fileName)
         {
             string fileContent;
-            using (StreamReader fileStream = File.OpenText(fileName))
+            using (StreamReader fileStream = new StreamReader(fileName))
             {
                 fileContent = await fileStream.ReadToEndAsync();
             }
@@ -24,7 +24,7 @@ namespace TestGeneratorLib
         {
             using (StreamWriter fileStream = File.CreateText(destinationFile))
             {
-                await fileStream.WriteLineAsync(fileContent);
+                await fileStream.WriteAsync(fileContent);
             }
         }
         
